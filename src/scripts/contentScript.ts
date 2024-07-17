@@ -9,19 +9,19 @@ if (document.URL.includes("youtube.com")) {
 }
 
 if (platform) {
-  platform.subscribeChanges();
   platform.subscribeToNewData(async (video) => {
     const content = video.map((item) => platform.getInfoItem(item));
-    console.log(content);
+    platform.hiddenSpoiler(content[0].html, "Cargando...", 0.8);
     const result = await ai.isSpoiler(content);
-    console.log(result);
-    result.data.forEach((item) => {
+    result.data.forEach((item, index) => {
       if (item.probability > 0.5) {
         const video = content.find((video) => video.id === item.id);
         if (video) {
-          platform.hiddenSpoiler(video.html);
+          platform.hiddenSpoiler(video.html, item.name, item.probability);
         }
       }
     });
   });
+
+  platform.subscribeChanges();
 }
