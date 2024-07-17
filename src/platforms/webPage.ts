@@ -7,7 +7,11 @@ export abstract class WebPage {
     this.subject = new Subject();
   }
 
-  abstract hiddenSpoiler(html: HTMLElement): void;
+  abstract hiddenSpoiler(
+    html: HTMLElement,
+    name: string | undefined | null,
+    spoilerProbability: number
+  ): void;
   abstract getInfoItem(element: HTMLElement): InfoContent;
   abstract subscribeChanges(): void;
   subscribeToNewData(observer: Observer) {
