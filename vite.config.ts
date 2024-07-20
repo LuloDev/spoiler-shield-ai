@@ -14,6 +14,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         index: "index.html",
+        settings: "settings.html",
         contentScript: "src/scripts/contentScript.ts",
         serviceWorker: "src/scripts/serviceWorker.ts",
       },
