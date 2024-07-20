@@ -25,14 +25,17 @@
     "vite": "^5.3.1"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^0.0.30",
     "@ai-sdk/openai": "^0.0.36",
     "@ai-sdk/svelte": "^0.0.15",
     "ai": "^3.2.22",
     "bits-ui": "^0.21.12",
     "clsx": "^2.1.1",
+    "formsnap": "^1.0.1",
     "lucide-svelte": "^0.408.0",
     "mode-watcher": "^0.3.1",
     "ollama-ai-provider": "^0.10.0",
+    "sveltekit-superforms": "^2.16.1",
     "tailwind-merge": "^2.4.0",
     "tailwind-variants": "^0.2.1",
     "zod": "^3.23.8"
