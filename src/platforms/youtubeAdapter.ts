@@ -52,7 +52,9 @@ export class YouTubeAdapter extends WebPage {
     spoilerContainer.style.zIndex = "10";
 
     const spoilerText = document.createElement("p");
-    spoilerText.textContent = `${name ?? ""}: ${spoilerProbability * 100}%`;
+    spoilerText.textContent = `${name}: Probability ${
+      spoilerProbability * 100
+    }%`;
     spoilerText.style.marginBottom = "10px";
     spoilerText.style.fontSize = "24px";
 

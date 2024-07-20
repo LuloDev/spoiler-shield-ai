@@ -1,7 +1,7 @@
 <script lang="ts">
   import * as Select from "$lib/components/ui/select";
   import type { Selected } from "bits-ui";
-  import OpenAi from "./providers/OpenAi.svelte";
+  import type { AiSetting } from "src/models/settings/aiSetting";
 
   export let provider = "openai";
   export let setProvider = (selected: Selected<unknown> | undefined) => {
@@ -13,6 +13,13 @@
     label: provider,
     value: provider,
   };
+  let providers: AiSetting[] = [];
+  async function loadSettings() {
+    const { settings } = await chrome.storage.sync.get(["settings"]);
+    providers = settings;
+  }
+
+  loadSettings();
 </script>
 
 <div class="flex gap-2 flex-col">
@@ -21,19 +28,9 @@
       <Select.Value placeholder="AI Providers" />
     </Select.Trigger>
     <Select.Content>
-      <Select.Item value="openai">OpenAI</Select.Item>
-      <Select.Item value="ollama">Ollama</Select.Item>
-      <Select.Item value="anthropic">Anthropic</Select.Item>
+      {#each providers as provider}
+        <Select.Item value={provider.name}>{provider.name}</Select.Item>
+      {/each}
     </Select.Content>
   </Select.Root>
-
-  {#if provider === "openai"}
-    <OpenAi />
-  {/if}
-  {#if provider === "ollama"}
-    <p>Ollama</p>
-  {/if}
-  {#if provider === "anthropic"}
-    <p>Anthropic</p>
-  {/if}
 </div>
