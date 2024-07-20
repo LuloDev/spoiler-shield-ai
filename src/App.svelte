@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { writable } from "svelte/store";
   import { ModeWatcher } from "mode-watcher";
   import Button from "$lib/components/ui/button/button.svelte";
   import PowerIcon from "$lib/components/icons/power-icon.svelte";
