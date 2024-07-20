@@ -1,17 +1,39 @@
 import { createOllama } from "ollama-ai-provider";
+import { createOpenAI } from "@ai-sdk/openai";
+import { createAnthropic } from "@ai-sdk/anthropic";
 import { generateObject } from "ai";
 import { relatedSchema } from "../models/schemas";
 import type { InfoContent } from "../platforms/webPage";
 import tv from "../assets/tv-shows.json";
+import type { AiSetting } from "../models/settings/aiSetting";
 
 export class AiService {
-  private readonly model;
-
-  constructor() {
-    const ollama = createOllama({
-      baseURL: "http://localhost:11434/api",
-    });
-    this.model = ollama("llama3");
+  private async getModel() {
+    const { provider } = await chrome.storage.sync.get(["provider"]);
+    const { settings } = await chrome.storage.sync.get(["settings"]);
+    const config: AiSetting = settings[provider];
+    if (config.provider === "ollama") {
+      const { baseURL, model } = config;
+      const ollama = createOllama({
+        baseURL: baseURL ?? "http://localhost:11434/api",
+      });
+      return ollama(model);
+    }
+    if (config.provider === "openai") {
+      const { apiKey, model } = config;
+      const openai = createOpenAI({
+        compatibility: "strict",
+        apiKey: apiKey ?? "",
+      });
+      return openai(model);
+    }
+    if (config.provider === "anthropic") {
+      const { apiKey, model } = config;
+      const antropic = createAnthropic({
+        apiKey: apiKey ?? "",
+      });
+      return antropic(model);
+    }
   }
 
   async isSpoiler(content: InfoContent[]) {
@@ -28,8 +50,12 @@ export class AiService {
       )
       .join("\n");
     const tvShows = tv.map((show) => show.name).join("\n");
+    const model = await this.getModel();
+    if (!model) {
+      throw new Error("Model not found");
+    }
     const result = await generateObject({
-      model: this.model,
+      model,
       schema: relatedSchema,
       temperature: 0.2,
       prompt: `Para un espectador de la serie "[NOMBRE SERIE]" que navega por YouTube, evalúa la probabilidad de que el siguiente título de video contenga spoilers de la serie. Devuelve un único número entre 0 y 1 en formato JSON, sin explicación adicional.
