@@ -3,21 +3,6 @@
   import * as Tabs from "$lib/components/ui/tabs/index";
   import AiSetting from "$lib/components/settings/AiSetting.svelte";
   import "../app.css";
-
-  let isActive = true;
-  let provider = "openai";
-  async function getConfig() {
-    const config = await chrome.storage.sync.get(["isActive", "provider"]);
-    console.log(config);
-    isActive = config.isActive;
-    provider = config.provider;
-  }
-
-  function toggleActive() {
-    isActive = !isActive;
-    chrome.storage.sync.set({ isActive });
-  }
-  getConfig();
 </script>
 
 <main>

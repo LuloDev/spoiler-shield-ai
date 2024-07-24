@@ -9,9 +9,8 @@ import type { AiSetting } from "../models/settings/aiSetting";
 
 export class AiService {
   private async getModel() {
-    const { provider } = await chrome.storage.sync.get(["provider"]);
     const { settings } = await chrome.storage.sync.get(["settings"]);
-    const config: AiSetting = settings[provider];
+    const config: AiSetting = settings;
     if (config.provider === "ollama") {
       const { baseURL, model } = config;
       const ollama = createOllama({

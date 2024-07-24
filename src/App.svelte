@@ -2,22 +2,28 @@
   import { ModeWatcher } from "mode-watcher";
   import Button from "$lib/components/ui/button/button.svelte";
   import PowerIcon from "$lib/components/icons/power-icon.svelte";
-  import LlmProvider from "$lib/components/LlmProvider.svelte";
   import "./app.css";
+  import SettingsIcon from "$lib/components/icons/settings-icon.svelte";
 
   let isActive = true;
-  let provider = "openai";
   async function getConfig() {
-    const config = await chrome.storage.sync.get(["isActive", "provider"]);
+    const config = await chrome.storage.sync.get(["isActive", "settings"]);
+    if (!config.settings) {
+      openSettings();
+    }
     console.log(config);
     isActive = config.isActive;
-    provider = config.provider;
   }
 
   function toggleActive() {
     isActive = !isActive;
     chrome.storage.sync.set({ isActive });
   }
+
+  function openSettings() {
+    chrome.runtime.openOptionsPage();
+  }
+
   getConfig();
 </script>
 
@@ -41,7 +47,9 @@
   </Button>
   <p>{isActive ? "On" : "Off"}</p>
 
-  <LlmProvider {provider} />
+  <Button class="rounded-full bg-slate-700" on:click={openSettings}>
+    <SettingsIcon />
+  </Button>
 </main>
 
 <style>
