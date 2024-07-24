@@ -47,13 +47,19 @@
   </Button>
   <p>{isActive ? "On" : "Off"}</p>
 
-  <Button class="rounded-full bg-slate-700" on:click={openSettings}>
+  <Button
+    class="absolute top-2 right-2"
+    variant="outline"
+    size="icon"
+    on:click={openSettings}
+  >
     <SettingsIcon />
   </Button>
 </main>
 
 <style>
   main {
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
