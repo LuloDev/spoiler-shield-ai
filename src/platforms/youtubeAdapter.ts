@@ -12,8 +12,25 @@ export class YouTubeAdapter extends WebPage {
     this.subject.notify(videoList);
   }
 
-  subscribeChanges() {
-    const targetNode = document.querySelector("#contents")!;
+  private waitForContents(): Promise<Element> {
+    return new Promise((resolve) => {
+      const observer = new MutationObserver((mutationsList, observer) => {
+        const target = document.querySelector("#contents");
+        if (target) {
+          observer.disconnect();
+          resolve(target);
+        }
+      });
+
+      // Configurar el observador para monitorear la adición de nodos hijos
+      observer.observe(document.body, { childList: true, subtree: true });
+    });
+  }
+
+  async subscribeChanges() {
+    // search for the container of the videos
+    let targetNode = await this.waitForContents();
+
     const config = { childList: true, subtree: false };
     const observer = new MutationObserver((mutationsList) => {
       const videoList: HTMLElement[] = [];
@@ -33,7 +50,7 @@ export class YouTubeAdapter extends WebPage {
       }
       this.subject.notify(videoList);
     });
-    observer.observe(targetNode, config);
+    if (targetNode) observer.observe(targetNode, config);
     this.processInitialData();
   }
 

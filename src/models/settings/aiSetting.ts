@@ -19,7 +19,13 @@ export type AnthropicSetting = BaseSetting & {
   apiKey: string | null;
 };
 
-export const openAiModels = ["gpt-3.5-turbo", "gpt-4o", "gpt-4", "gpt-4-turbo"];
+export const openAiModels = [
+  "gpt-4o-mini",
+  "gpt-3.5-turbo",
+  "gpt-4o",
+  "gpt-4",
+  "gpt-4-turbo",
+];
 export const ollamaModels = [
   "llama3",
   "llama2",

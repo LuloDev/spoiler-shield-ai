@@ -4,8 +4,8 @@ import { createAnthropic } from "@ai-sdk/anthropic";
 import { generateObject } from "ai";
 import { relatedSchema } from "../models/schemas";
 import type { InfoContent } from "../platforms/webPage";
-import tv from "../assets/tv-shows.json";
 import type { AiSetting } from "../models/settings/aiSetting";
+import type { ResultTv } from "src/models/tmdb/tmdbSearch";
 
 export class AiService {
   private async getModel() {
@@ -48,7 +48,10 @@ export class AiService {
         })
       )
       .join("\n");
-    const tvShows = tv.map((show) => show.name).join("\n");
+    const { tvShows: tv } = await chrome.storage.sync.get("tvShows");
+    const tvShows = tv
+      .map((show: ResultTv) => `${show.name} (${show.original_name})`)
+      .join("\n");
     const model = await this.getModel();
     if (!model) {
       throw new Error("Model not found");
