@@ -10,8 +10,12 @@
     "service_worker": "serviceWorker.js"
   },
   "options_page": "settings.html",
-  "permissions": ["activeTab", "scripting", "tabs", "storage"],
-  "host_permissions": ["https://*/*", "http://*/*"],
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": [
+    "https://youtube.com/*",
+    "https://www.youtube.com/*",
+    "https://*.youtube.com/*"
+  ],
   "content_scripts": [
     {
       "matches": [
