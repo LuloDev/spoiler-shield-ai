@@ -2,6 +2,7 @@
   import { ModeWatcher } from "mode-watcher";
   import * as Tabs from "$lib/components/ui/tabs/index";
   import AiSetting from "$lib/components/settings/AiSetting.svelte";
+  import TvSetting from "$lib/components/settings/TvSetting.svelte";
   import "../app.css";
 </script>
 
@@ -10,12 +11,18 @@
   <h1 class="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl">
     Spoiler Shield AI - Settings
   </h1>
-  <Tabs.Root value="aisetting" class="w-[400px]">
-    <Tabs.List class="grid w-full grid-cols-2">
+  <Tabs.Root value="aisetting" class="w-11/12 ">
+    <Tabs.List
+      class="flex w-full justify-items-start justify-start bg-background"
+    >
       <Tabs.Trigger value="aisetting">Ai Settings</Tabs.Trigger>
+      <Tabs.Trigger value="tvsetting">Tv Shows</Tabs.Trigger>
     </Tabs.List>
     <Tabs.Content value="aisetting">
       <AiSetting />
+    </Tabs.Content>
+    <Tabs.Content value="tvsetting">
+      <TvSetting />
     </Tabs.Content>
   </Tabs.Root>
 </main>
