@@ -23,7 +23,6 @@
   function handleChange(event: any) {
     if (!event.target) return;
     tmdbApi.searchTvShow(event.target.value).then((data) => {
-      console.log(data);
       result.set(data.results);
     });
   }

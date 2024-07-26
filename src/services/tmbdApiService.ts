@@ -32,7 +32,6 @@ export class TmbdApiService {
       });
       return result.data;
     } catch (error) {
-      console.error("Error in searchTvShow", error);
       return { results: [], total_results: 0, total_pages: 0, page: 0 };
     }
   }

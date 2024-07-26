@@ -9,7 +9,10 @@ export class YouTubeAdapter extends WebPage {
     const videoList: HTMLElement[] = Array.from(
       document.querySelectorAll("ytd-rich-item-renderer")
     );
-    this.subject.notify(videoList);
+    const videoList2: HTMLElement[] = Array.from(
+      document.querySelectorAll("ytd-video-renderer")
+    );
+    this.subject.notify([...videoList, ...videoList2]);
   }
 
   private waitForContents(): Promise<Element> {
@@ -37,11 +40,16 @@ export class YouTubeAdapter extends WebPage {
       for (const mutation of mutationsList) {
         if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
           mutation.addedNodes.forEach((node) => {
-            const videos = Array.from(
-              (node as HTMLElement).querySelectorAll(
-                "ytd-rich-item-renderer"
-              ) ?? []
-            );
+            let videos: HTMLElement[] = [];
+            if (document.URL.includes("/results")) {
+              videos = [node as HTMLElement];
+            } else {
+              videos = Array.from(
+                (node as HTMLElement).querySelectorAll(
+                  "ytd-rich-item-renderer"
+                ) ?? []
+              );
+            }
             if (videos.length > 0) {
               videoList.push(...(videos as HTMLElement[]));
             }
@@ -92,9 +100,15 @@ export class YouTubeAdapter extends WebPage {
 
     video.style.position = "relative";
     video.appendChild(spoilerContainer);
-    video
-      .querySelector("#content")
-      ?.setAttribute("style", "filter: blur(10px)");
+    if (document.URL.includes("/results")) {
+      video
+        .querySelector("#dismissible")
+        ?.setAttribute("style", "filter: blur(10px)");
+    } else {
+      video
+        .querySelector("#content")
+        ?.setAttribute("style", "filter: blur(10px)");
+    }
   }
 
   displayContent(video: HTMLElement) {

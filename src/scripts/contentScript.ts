@@ -6,7 +6,6 @@ async function main() {
   let platform: WebPage | null = null;
   const { isActive } = await chrome.storage.sync.get(["isActive"]);
   if (!isActive) {
-    console.log("Extension is disabled");
     return;
   }
   const ai = new AiService();

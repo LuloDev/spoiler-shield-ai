@@ -11,7 +11,6 @@
     if (!config.settings) {
       openSettings();
     }
-    console.log(config);
     isActive = config.isActive;
   }
 
