@@ -14,8 +14,12 @@ async function main() {
   }
 
   if (platform) {
-    platform.subscribeToNewData(async (video) => {
-      const content = video.map((item) => platform.getInfoItem(item));
+    platform.subscribeToNewData(async (videos) => {
+      console.log("videos", videos);
+      const content = videos
+        .map((item) => platform.getInfoItem(item))
+        .filter((item) => item !== null);
+
       const result = await ai.isSpoiler(content);
       result.data.forEach((item) => {
         if (item.probability > 0.5) {
@@ -26,9 +30,11 @@ async function main() {
               item.name ?? "Spoiler",
               item.probability
             );
+            video.probability = item.probability;
           }
         }
       });
+      console.log("result", content);
     });
 
     platform.subscribeChanges();

@@ -12,7 +12,7 @@ export abstract class WebPage {
     name: string | undefined | null,
     spoilerProbability: number
   ): void;
-  abstract getInfoItem(element: HTMLElement): InfoContent;
+  abstract getInfoItem(element: Element): InfoContent | null;
   abstract subscribeChanges(): void;
   subscribeToNewData(observer: Observer) {
     this.subject.subscribe(observer);
@@ -29,4 +29,5 @@ export type InfoContent = {
   author?: string | null;
   description?: string | null;
   html: HTMLElement;
+  probability?: number | null;
 };
