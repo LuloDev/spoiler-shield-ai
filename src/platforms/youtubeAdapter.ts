@@ -1,6 +1,8 @@
 import { WebPage, type InfoContent } from "./webPage";
 
 export class YouTubeAdapter extends WebPage {
+  private started = false;
+
   constructor() {
     super();
   }
@@ -35,6 +37,7 @@ export class YouTubeAdapter extends WebPage {
     const videosSearch = Array.from(
       node.querySelectorAll("ytd-video-renderer") ?? []
     );
+
     return [...videosHome, ...videosSearch];
   }
 
@@ -43,12 +46,38 @@ export class YouTubeAdapter extends WebPage {
     for (const mutation of mutationsList) {
       if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
         mutation.addedNodes.forEach((node) => {
+          if (!this.started) {
+            const sections = Array.from(
+              node.parentElement?.querySelectorAll(
+                "ytd-item-section-renderer"
+              ) ?? []
+            );
+            sections.forEach((section) => {
+              const contents = section.querySelector("#contents");
+              if (contents) {
+                this.subscribeNodeChanges(Promise.resolve(contents));
+              }
+            });
+
+            this.started = true;
+          }
+          if (node.nodeName === "YTD-ITEM-SECTION-RENDERER") {
+            const contents = (node as HTMLElement).querySelector("#contents");
+            if (contents) {
+              this.subscribeNodeChanges(Promise.resolve(contents));
+            }
+          }
           if (node.nodeName === "YTD-SHELF-RENDERER") {
             const videos: HTMLElement[] = Array.from(
               (node as HTMLElement).querySelectorAll("ytd-video-renderer")
             );
             videoList.push(...videos);
-          } else {
+          }
+          if (
+            node.nodeName === "YTD-VIDEO-RENDERER" ||
+            node.nodeName === "YTD-RICH-ITEM-RENDERER" ||
+            node.nodeName === "YTD-COMPACT-VIDEO-RENDERER"
+          ) {
             videoList.push(node as HTMLElement);
           }
         });
@@ -66,8 +95,8 @@ export class YouTubeAdapter extends WebPage {
       if (!contents) {
         return;
       }
-      this.subject.notify(this.fetchVideoItems(contents));
       observer.observe(contents, config);
+      if (this.started) this.subject.notify(this.fetchVideoItems(contents));
     });
   }
 
@@ -84,25 +113,14 @@ export class YouTubeAdapter extends WebPage {
     );
 
     // Search page
+
     this.subscribeNodeChanges(
       this.waitForBrowse(() => {
         const contentSearch = document.body.querySelector("ytd-search");
         if (!contentSearch) {
           return null;
         }
-        const parentContents = contentSearch.querySelector("#contents");
-        // TODO SUBSCRIBE TO PARENT CONTENTS TO GET THE VIDEOS SECTIONS
-        // ytd-item-section-renderer no directy #contents,
-        // second #contents is only first section after load more yt add more sections
-        const contents = parentContents?.querySelectorAll("#contents");
-        if (contents) {
-          for (const content of contents) {
-            if (content.querySelector("ytd-video-renderer")) {
-              return content;
-            }
-          }
-        }
-        return null;
+        return contentSearch.querySelector("#contents");
       })
     );
 

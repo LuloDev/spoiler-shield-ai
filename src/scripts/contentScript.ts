@@ -15,7 +15,6 @@ async function main() {
 
   if (platform) {
     platform.subscribeToNewData(async (videos) => {
-      console.log("videos", videos);
       const content = videos
         .map((item) => platform.getInfoItem(item))
         .filter((item) => item !== null);
@@ -34,7 +33,6 @@ async function main() {
           }
         }
       });
-      console.log("result", content);
     });
 
     platform.subscribeChanges();
