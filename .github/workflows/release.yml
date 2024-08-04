@@ -4,46 +4,45 @@ on:
   push:
     tags:
       - "v*.*.*"
-
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@0609f0983b7a228f052f81ef4c3d6510cae254ad
+        with:
+          version: 6.10.0
+      - uses: actions/setup-node@v4
         with:
           node-version: "20"
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Build the extension
-        run: pnpm run build
-
-      - name: Zip the dist folder
-        run: zip -r spoiler-shield-ai.zip dist
-
-      - name: Create GitHub Release
+          cache: "pnpm"
+      - name: Build
+        id: build
+        run: |
+          pnpm install
+          pnpm run build
+          zip -r spoiler-shield-ai.zip dist
+          ls
+          echo "::set-output name=tag_name::$(git tag --sort version:refname | tail -n 1)"
+      - name: Create Release
+        uses: ncipollo/release-action@v1
         id: create_release
-        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ github.ref }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          allowUpdates: true
           draft: false
           prerelease: false
 
-      - name: Upload Release Asset
+      - name: Upload zip file
+        id: upload_zip
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./spoiler-shield-ai.zip
-          asset_name: spoiler-shield-ai.zip
+          asset_name: spoiler-shield-ai-${{ steps.build.outputs.tag_name }}.zip
           asset_content_type: application/zip
