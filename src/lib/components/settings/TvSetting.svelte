@@ -1,16 +1,17 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import Input from "$lib/components/ui/input/input.svelte";
-  import * as Card from "$lib/components/ui/card";
   import Button from "$lib/components/ui/button/button.svelte";
   import { writable } from "svelte/store";
   import { TmbdApiService } from "../../../services/tmbdApiService";
   import type { ResultTv } from "src/models/tmdb/tmdbSearch";
+  import CardTv from "../tvshow/CardTv.svelte";
 
   let timeoutId: ReturnType<typeof setTimeout>;
 
   let result = writable<ResultTv[]>([]);
   let tvShows = writable<ResultTv[]>([]);
+  let search = writable<string>("");
   const tmdbApi = new TmbdApiService();
 
   function debounce(func: (event: InputEvent) => void, delay: number) {
@@ -22,6 +23,7 @@
 
   function handleChange(event: any) {
     if (!event.target) return;
+    search.set(event.target.value);
     tmdbApi.searchTvShow(event.target.value).then((data) => {
       result.set(data.results);
     });
@@ -36,6 +38,16 @@
 
       chrome.storage.sync.set({ tvShows: tvShowsSaved });
       tvShows.set(tvShowsSaved);
+    });
+  }
+
+  function removeTvShow(tv: ResultTv) {
+    chrome.storage.sync.get("tvShows", (data) => {
+      const tvShowsSaved = data.tvShows || [];
+      const newTvShows = tvShowsSaved.filter((t: ResultTv) => t.id !== tv.id);
+
+      chrome.storage.sync.set({ tvShows: newTvShows });
+      tvShows.set(newTvShows);
     });
   }
 
@@ -57,40 +69,39 @@
       on:input={debouncedHandleChange}
     />
   </div>
-  <section class="flex flex-row flex-wrap gap-7 mt-5">
-    {#if $result.length > 0}
-      {#each $result as tvShow}
-        <Card.Root class="w-[250px]">
-          <Card.Content class="p-1">
-            {#if tvShow.poster_path}
-              <img
-                src={`https://image.tmdb.org/t/p/w500${tvShow.poster_path}`}
-                alt={tvShow.name}
-              />
-            {:else}
-              <div class="w-full h-[360px]">
-                <p class="text-center">No poster found</p>
-              </div>
-            {/if}
-          </Card.Content>
-          <Card.Footer class="justify-center flex-col">
-            <div class="w-full justify-center">
-              <h3 class="text-center">{tvShow.name}</h3>
-            </div>
-            <div class="w-full flex justify-center">
-              {#if $tvShows.find((t) => t.id === tvShow.id)}
-                <p class="text-center text-sm">Already added</p>
-              {:else}
-                <Button class="mt-2 w-5/6" on:click={() => addTvShow(tvShow)}
-                  >Add</Button
-                >
-              {/if}
-            </div>
-          </Card.Footer>
-        </Card.Root>
-      {/each}
+  {#if $search === ""}
+    {#if $tvShows.length > 0}
+      <section class="flex flex-row flex-wrap gap-7 mt-5">
+        {#each $tvShows as tvShow}
+          <CardTv {tvShow}>
+            <Button
+              class="mt-2 w-5/6 ba"
+              variant="destructive"
+              on:click={() => removeTvShow(tvShow)}>Remove</Button
+            >
+          </CardTv>
+        {/each}
+      </section>
     {:else}
-      <p>No results</p>
+      <p>No tv shows added, search for add</p>
     {/if}
-  </section>
+  {:else}
+    <section class="flex flex-row flex-wrap gap-7 mt-5">
+      {#if $result.length > 0}
+        {#each $result as tvShow}
+          <CardTv {tvShow}>
+            {#if $tvShows.find((t) => t.id === tvShow.id)}
+              <p class="text-center text-sm">Already added</p>
+            {:else}
+              <Button class="mt-2 w-5/6" on:click={() => addTvShow(tvShow)}
+                >Add</Button
+              >
+            {/if}
+          </CardTv>
+        {/each}
+      {:else}
+        <p>No results</p>
+      {/if}
+    </section>
+  {/if}
 </main>

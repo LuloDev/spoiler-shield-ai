@@ -27,7 +27,8 @@ export const openAiModels = [
   "gpt-4-turbo",
 ];
 export const ollamaModels = [
-  "llama3",
+  "llama3.1:8b",
+  "llama3:8b",
   "llama2",
   "gemma2",
   "phi3",
