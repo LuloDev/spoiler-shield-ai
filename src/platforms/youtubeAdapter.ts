@@ -169,7 +169,7 @@ export class YouTubeAdapter extends WebPage {
     spoilerText.style.fontSize = fontSize;
 
     const revealButton = document.createElement("button");
-    revealButton.textContent = "Revelar Spoiler";
+    revealButton.textContent = "View Spoiler";
     revealButton.style.padding = "10px 20px";
     revealButton.style.fontSize = buttonFontSize;
     revealButton.style.cursor = "pointer";
