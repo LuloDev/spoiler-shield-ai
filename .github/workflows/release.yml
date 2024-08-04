@@ -24,7 +24,8 @@ jobs:
         id: build
         run: |
           pnpm run build
-          zip -r spoiler-shield-ai.zip dist/*
+          cd dist
+          zip -r spoiler-shield-ai.zip *
           ls
           echo "::set-output name=tag_name::$(git tag --sort version:refname | tail -n 1)"
       - name: Create Release
