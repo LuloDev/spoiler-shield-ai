@@ -10,17 +10,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@0609f0983b7a228f052f81ef4c3d6510cae254ad
-        with:
-          version: 6.10.0
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install
       - name: Build
         id: build
         run: |
-          pnpm install
           pnpm run build
           zip -r spoiler-shield-ai.zip dist
           ls
