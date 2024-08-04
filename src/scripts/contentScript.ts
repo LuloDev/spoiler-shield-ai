@@ -20,8 +20,10 @@ async function main() {
         .filter((item) => item !== null);
 
       const result = await ai.isSpoiler(content);
-      result.data.forEach((item) => {
-        if (item.probability > 0.5) {
+      result.data.forEach(async (item) => {
+        const { settings } = await chrome.storage.sync.get(["settings"]);
+        const umbral = settings.umbral ?? 0.5;
+        if (item.probability > umbral) {
           const video = content.find((video) => video.id === item.id);
           if (video) {
             platform.hiddenSpoiler(
