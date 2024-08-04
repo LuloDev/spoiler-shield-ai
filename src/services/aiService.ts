@@ -59,42 +59,42 @@ export class AiService {
     const result = await generateObject({
       model,
       schema: relatedSchema,
+      system:
+        "You are an AI assistant tasked with evaluating YouTube video titles for potential spoilers of specific TV shows. Follow these instructions:" +
+        " 1. Read the title of the video and the name of the TV show." +
+        " 2. You will be given a list of TV shows to avoid spoilers for, and a YouTube video title." +
+        " 3. For each show in the list, assess the probability that the given title contains spoilers, using a scale from 0 to 1." +
+        " 4. Return a JSON array of objects, each containing: " +
+        '   "probability": A number between 0 and 1' +
+        '   "name": The name of the TV show' +
+        '   "id": The ID of the video (which will be provided in the input)' +
+        "  Use this probability guide:" +
+        "   1.0: Almost certainly contains major spoilers" +
+        "   0.8: High probability of spoilers" +
+        "   0.5: Moderate possibility of spoilers" +
+        "   0.2: Low probability of spoilers" +
+        "   0.0: Definitely not related to the show" +
+        " 5. Definition of a spoiler: Information revealing important plot points, character deaths, plot twists, or future events of the show." +
+        " 6. In case of ambiguity, evaluate based on the title's relevance to the plot. If the title seems unrelated to the show or its genre, assign a value close to 0. " +
+        " 7. The video title may be in English, Spanish, or bilingual. Analyze accordingly. " +
+        " 8. Important Do not provide any additional explanation. Only return the JSON array." +
+        " Example input:" +
+        `   TV Shows: ["Game of Thrones", "Breaking Bad", "Stranger Things"]` +
+        `   Video title: "The Red Wedding: A Song of Ice and Fire's Most Shocking Moment", Video ID: "abc123"` +
+        ' Example output: [{"probability": 1.0, "name": "Game of Thrones", "id": "abc123"},{"probability": 0.0, "name": "Breaking Bad", "id": "abc123"},{"probability": 0.0, "name": "Stranger Things", "id": "abc123"}]' +
+        " Example of spoiler detection" +
+        ` "Breaking Bad: Walter White's Final Fate Revealed" - 1.0 (Direct spoiler about the series finale)` +
+        ` "Breaking Bad: The Science of Methamphetamine" - 0.5 (Mentions the show but not a spoiler)"` +
+        ` "Theories About the Next Season of Stranger Things" - 0.7 (Possible spoilers based on speculation)` +
+        ' "Interview with The Mandalorian Cast About Filming" - 0.3 (Low risk of spoilers, but could reveal indirect information)' +
+        ` "Top 10 Most Shocking Moments in Game of Thrones" - 0.9 (High probability of major spoilers)` +
+        ` "Costume Analysis in Bridgerton" - 0.2 (Unlikely to reveal important plot points)` +
+        ` "The Witcher: Who is Geralt of Rivia Really?" - 0.6 (Moderate possibility of character spoilers)` +
+        ` "New Squid Game Season 2 Trailer Analyzed Frame by Frame" - 0.8 (High probability of revealing information about the upcoming season)`,
       temperature: 0.2,
-      prompt: `Para un espectador de la serie "[NOMBRE SERIE]" que navega por YouTube, evalúa la probabilidad de que el siguiente título de video contenga spoilers de la serie. Devuelve un único número entre 0 y 1 en formato JSON, sin explicación adicional.
-Definición de spoiler: Información que revela tramas importantes, muertes de personajes, giros argumentales o eventos futuros de la serie.
-
-Listado de series que quiero evitar:
-
-${tvShows}
-
-Guía de interpretación:
-1.0: Casi seguro que contiene spoilers importantes [NOMBRE SERIE]
-0.8: Alta probabilidad de contener spoilers de [NOMBRE SERIE]
-0.5: Posibilidad moderada de spoilers [NOMBRE SERIE]
-0.2: Baja probabilidad de spoilers [NOMBRE SERIE]
-0.0: Definitivamente no relacionado con la serie [NOMBRE SERIE]
-
-Ejemplos de calibración:
-"House of the Dragon: ¡La muerte de [NOMBRE] explicada!" - 1.0
-"Teorías sobre el futuro de House of the Dragon" - 0.7
-"Reparto de House of the Dragon habla sobre la filmación" - 0.3
-"Reseña de juegos de estrategia medieval" - 0.1
-"El simulador de DETECTIVE CORRUPTO - Shadows of Doubt" - 0.0
-"Top 10 Trending GitHub Projects 2024 | AI, Automation, Agent-E & More" - 0.0
-"¡Mira este video de gatitos!" - 0.0
-"No Somos Polvo de Estrellas" - 0.0
-
-En caso de ambigüedad, evalúa basándote en la relevancia del título para la trama. Si el título no parece tener relación alguna con la serie o su género, asigna un valor cercano a 0.
-Título del video (puede ser en inglés, español o bilingüe): 
-
-${text}
-
-Retorna un listado de objetos con la probabilidad de que cada título contenga spoilers de la serie, el id 
-Ejemplo:
-
-[{ "probability": 0.8, "name": "House of the Dragon", "id": "idVideo"}]
-
-`,
+      prompt:
+        `TV Shows to search spoilers: ${tvShows}\n` +
+        `Video titles to search spoilers: ${text}\n`,
     });
     return result.object;
   };
