@@ -22,6 +22,8 @@ jobs:
         run: pnpm install
       - name: Build
         id: build
+        env:
+          VITE_TMDB_API_KEY: ${{ secrets.VITE_TMDB_API_KEY }}
         run: |
           pnpm run build
           cd dist; zip -r ../spoiler-shield-ai.zip *;cd ..
