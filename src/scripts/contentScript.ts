@@ -14,12 +14,16 @@ async function main() {
   }
 
   if (platform) {
+    platform.processInitialData();
     platform.subscribeToNewData(async (videos) => {
+      videos.forEach((item) => platform.hiddenLoading(item));
       const content = videos
         .map((item) => platform.getInfoItem(item))
         .filter((item) => item !== null);
 
       const result = await ai.isSpoiler(content);
+      videos.forEach((item) => platform.removeLoading(item));
+
       result.data.forEach(async (item) => {
         const { settings } = await chrome.storage.sync.get(["settings"]);
         const umbral = settings.umbral ?? 0.5;

@@ -8,13 +8,27 @@ export class YouTubeAdapter extends WebPage {
   }
 
   processInitialData() {
-    const videoList: HTMLElement[] = Array.from(
-      document.querySelectorAll("ytd-rich-item-renderer")
-    );
-    const videoList2: HTMLElement[] = Array.from(
-      document.querySelectorAll("ytd-video-renderer")
-    );
-    this.subject.notify([...videoList, ...videoList2]);
+    const observer = new MutationObserver((mutationsList, observer) => {
+      const ytBrowse = document.body.querySelector("ytd-browse");
+      const ytSearch = document.body.querySelector("ytd-search");
+      const container = ytBrowse ?? ytSearch;
+      if (!container) {
+        return null;
+      }
+      const contents = container.querySelector("#contents");
+      if (!contents) {
+        return null;
+      }
+      observer.disconnect();
+      const videoList: HTMLElement[] = Array.from(
+        document.querySelectorAll("ytd-rich-item-renderer")
+      );
+      const videoList2: HTMLElement[] = Array.from(
+        document.querySelectorAll("ytd-video-renderer")
+      );
+      this.subject.notify([...videoList, ...videoList2]);
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
   }
 
   private waitForBrowse(callback: () => Element | null): Promise<Element> {
@@ -140,6 +154,38 @@ export class YouTubeAdapter extends WebPage {
     );
   }
 
+  hiddenLoading(video: HTMLElement) {
+    let fontSize = "16px";
+    if (video.nodeName === "YTD-COMPACT-VIDEO-RENDERER") {
+      fontSize = "14px";
+    }
+    video
+      .querySelector("#dismissible")
+      ?.setAttribute("style", "filter: blur(10px)");
+
+    const spoilerContainer = document.createElement("div");
+    spoilerContainer.setAttribute("id", "spoiler-container");
+    spoilerContainer.style.position = "absolute";
+    spoilerContainer.style.top = "0";
+    spoilerContainer.style.left = "0";
+    spoilerContainer.style.width = "100%";
+    spoilerContainer.style.height = "100%";
+    spoilerContainer.style.color = "white";
+    spoilerContainer.style.display = "flex";
+    spoilerContainer.style.flexDirection = "column";
+    spoilerContainer.style.justifyContent = "center";
+    spoilerContainer.style.alignItems = "center";
+    spoilerContainer.style.zIndex = "10";
+
+    const text = document.createElement("p");
+    text.style.marginBottom = "10px";
+    text.textContent = "Analyzing...";
+    text.style.fontSize = fontSize;
+    spoilerContainer.appendChild(text);
+    video.style.position = "relative";
+    video.appendChild(spoilerContainer);
+  }
+
   hiddenSpoiler(video: HTMLElement, name: string, spoilerProbability: number) {
     // is element ytd-compact-video-renderer
     let fontSize = "16px";
@@ -192,6 +238,14 @@ export class YouTubeAdapter extends WebPage {
 
   displayContent(video: HTMLElement) {
     video.querySelector("#dismissible")?.setAttribute("style", "filter: none");
+  }
+
+  removeLoading(html: HTMLElement): void {
+    const spoilerContainer = html.querySelector("#spoiler-container");
+    if (spoilerContainer) {
+      spoilerContainer.remove();
+    }
+    this.displayContent(html);
   }
 
   getInfoItem(element: HTMLElement): InfoContent | null {

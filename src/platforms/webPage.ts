@@ -6,6 +6,9 @@ export abstract class WebPage {
   constructor() {
     this.subject = new Subject();
   }
+  abstract processInitialData(): void;
+  abstract hiddenLoading(html: Element): void;
+  abstract removeLoading(html: Element): void;
 
   abstract hiddenSpoiler(
     html: HTMLElement,
