@@ -40,7 +40,7 @@
 
 ## 📍 Overview
 
-"Spoiler Shield AI" is a chrome extension designed to detect and hide spoilers on the web using advanced AI technologies. The project leverages the Vercel AI package to make calls to various AI services, including OpenAI, Anthropic, and Ollama. This ensures robust and accurate spoiler detection across different platforms, particularly focusing on YouTube, TV shows.
+"Spoiler Shield AI" is a chrome extension designed to detect and hide spoilers on the web using advanced AI technologies. The project leverages the Vercel AI package to make calls to various AI services, including OpenAI, Anthropic, and Ollama. This ensures robust and accurate spoiler detection across different platforms, particularly focusing on YouTube, TV shows and movies.
 
 ---
 
@@ -129,7 +129,7 @@ This will generate the necessary files in the [`dist`]
 
 - [x] `► Block Youtube`
 - [x] `► Block TV shows`
-- [ ] `► Block Movies`
+- [x] `► Block Movies`
 - [ ] `► Customize Prompt Configuration`
 
 ---

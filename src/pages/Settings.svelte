@@ -3,6 +3,7 @@
   import * as Tabs from "$lib/components/ui/tabs/index";
   import AiSetting from "$lib/components/settings/AiSetting.svelte";
   import TvSetting from "$lib/components/settings/TvSetting.svelte";
+  import MovieSetting from "$lib/components/settings/MovieSetting.svelte";
   import "../app.css";
 </script>
 
@@ -17,12 +18,16 @@
     >
       <Tabs.Trigger value="aisetting">Ai Settings</Tabs.Trigger>
       <Tabs.Trigger value="tvsetting">Tv Shows</Tabs.Trigger>
+      <Tabs.Trigger value="moviesetting">Movies</Tabs.Trigger>
     </Tabs.List>
     <Tabs.Content value="aisetting">
       <AiSetting />
     </Tabs.Content>
     <Tabs.Content value="tvsetting">
       <TvSetting />
+    </Tabs.Content>
+    <Tabs.Content value="moviesetting">
+      <MovieSetting />
     </Tabs.Content>
   </Tabs.Root>
 </main>
