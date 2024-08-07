@@ -46,6 +46,10 @@
 
 ## 🚀 Getting Started
 
+### Install from Chrome Web Store (Recommended)
+
+[Install Spoiler Shield AI](https://chromewebstore.google.com/detail/spoiler-shield-ai/bjhjfkpamcoegddbofpaogemhonbdppn)
+
 ### Compile the extension yourself
 
 **_Requirements_**
